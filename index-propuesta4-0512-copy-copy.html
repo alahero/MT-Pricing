@@ -2245,11 +2245,7 @@
               </a>
             </div>
 
-            <!--Navbar CTA-->
-            <div class="navbar-cta mobile-cta d-lg-none d-none d-sm-block">
-              <a href="#" class="nav-link btn btn-outline-light btn-sm open-pricing-modal" style="cursor: pointer;">BOOK
-                TICKETS</a>
-            </div>
+
 
             <div class="d-lg-none" id="JS-open-menu">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -3097,46 +3093,89 @@
                   document.addEventListener('DOMContentLoaded', function () {
                     const categoryBtns = document.querySelectorAll('.category-btn');
 
-                    categoryBtns.forEach(btn => {
-                      btn.addEventListener('click', function () {
-                        // 1. Toggle Active Class (Scoped to container)
-                        const container = this.closest('.category-buttons-container');
-                        const siblingBtns = container.querySelectorAll('.category-btn');
+                    // Function to handle filtering logic
+                    function handleCategoryClick(btn) {
+                      // 1. Toggle Active Class (Scoped to container)
+                      const container = btn.closest('.category-buttons-container');
+                      if (!container) return; // Guard clause
 
-                        siblingBtns.forEach(b => b.classList.remove('active'));
-                        this.classList.add('active');
+                      const siblingBtns = container.querySelectorAll('.category-btn');
+                      siblingBtns.forEach(b => b.classList.remove('active'));
+                      btn.classList.add('active');
 
-                        // 2. Identify Target Content Area
-                        const selectedCategory = this.textContent.trim();
-                        let targetContentId = '';
+                      // 2. Identify Target Content Area (Scoped to the specific tab content wrapper)
+                      const selectedCategory = btn.textContent.trim();
 
-                        if (container.id === 'buttons-table-service') {
-                          targetContentId = 'modal-table-service-content';
-                        } else if (container.id === 'buttons-personal') {
-                          targetContentId = 'modal-personal-content';
-                        }
+                      // Find the parent tab content div (e.g., #modal-table-service-content)
+                      const tabContent = container.closest('.modal-tab-content');
+                      if (!tabContent) return;
 
-                        // 3. Filter Content (Scoped to target area)
-                        if (targetContentId) {
-                          const contentContainer = document.getElementById(targetContentId);
-                          const scopedContents = contentContainer.querySelectorAll('.category-content');
+                      // Find all items within this tab that are meant to be filtered
+                      const categoryContents = tabContent.querySelectorAll('.category-content');
 
-                          scopedContents.forEach(content => {
-                            if (content.getAttribute('data-category') === selectedCategory) {
-                              content.style.display = 'flex';
-                            } else {
-                              content.style.display = 'none';
-                            }
-                          });
+                      // 3. Show/Hide based on selection
+                      categoryContents.forEach(content => {
+                        if (content.getAttribute('data-category') === selectedCategory) {
+                          content.style.display = 'flex';
+                        } else {
+                          content.style.display = 'none';
                         }
                       });
+                    }
+
+                    // Attach event listeners
+                    categoryBtns.forEach(btn => {
+                      btn.addEventListener('click', function () {
+                        handleCategoryClick(this);
+                      });
                     });
+
+                    // Initial run: trigger click on the active button of valid visible tabs or just run filter
+                    // To ensure consistency on load (optional but good practice)
+                    document.querySelectorAll('.modal-tab-content').forEach(tab => {
+                      const activeBtn = tab.querySelector('.category-buttons-container .category-btn.active');
+                      if (activeBtn) {
+                        handleCategoryClick(activeBtn);
+                      }
+                    });
+
                   });
+                </script>
+                if (container.id === 'buttons-table-service') {
+                targetContentId = 'modal-table-service-content';
+                } else if (container.id === 'buttons-personal') {
+                targetContentId = 'modal-personal-content';
+                }
+
+                // 3. Filter Content (Scoped to target area)
+                if (targetContentId) {
+                const contentContainer = document.getElementById(targetContentId);
+                const scopedContents = contentContainer.querySelectorAll('.category-content');
+
+                scopedContents.forEach(content => {
+                if (content.getAttribute('data-category') === selectedCategory) {
+                content.style.display = 'flex';
+                } else {
+                content.style.display = 'none';
+                }
+                });
+                }
+                });
+                });
+                });
                 </script>
 
                 <!-- Tab Content: Table Service -->
                 <div id="modal-table-service-content" class="modal-tab-content">
-                  <div class="table-service-grid">
+                  <div class="category-buttons-container" id="buttons-table-service">
+                    <button class="category-btn active">DIAMOND</button>
+                    <button class="category-btn">BLACK</button>
+                    <button class="category-btn">PLATINUM</button>
+                    <button class="category-btn">GOLD</button>
+                    <button class="category-btn">SILVER</button>
+                  </div>
+                  <div class="table-service-grid"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
                     <!-- DIAMOND -->
                     <div class="category-content" data-category="DIAMOND"
                       style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(85, 191, 238, 0.3); border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;">
@@ -3440,7 +3479,13 @@
 
                 <!-- Tab Content: Personal -->
                 <div id="modal-personal-content" class="modal-tab-content" style="display: none;">
-                  <div class="personal-grid">
+                  <div class="category-buttons-container">
+                    <button class="category-btn active">XCLUSIVE PASS</button>
+                    <button class="category-btn">UNLIMITED DRINKS</button>
+                    <button class="category-btn">GENERAL ADMISSION</button>
+                    <button class="category-btn">MADNESS TOUR</button>
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
                     <!-- XCLUSIVE PASS -->
                     <div class="category-content" data-category="XCLUSIVE PASS"
                       style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(85, 191, 238, 0.3); border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;">
@@ -3688,8 +3733,11 @@
 
                 <!-- Tab Content: Residents -->
                 <div id="modal-residents-content" class="modal-tab-content" style="display: none;">
+                  <div class="category-buttons-container">
+                    <button class="category-btn active">RESIDENTS</button>
+                  </div>
                   <div class="residents-grid">
-                    <div
+                    <div class="category-content" data-category="RESIDENTS"
                       style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(85, 191, 238, 0.3); border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;">
                       <div style="flex: 1;">
                         <h5
@@ -3751,8 +3799,11 @@
 
                 <!-- Tab Content: Special Offers -->
                 <div id="modal-special-offers-content" class="modal-tab-content" style="display: none;">
+                  <div class="category-buttons-container">
+                    <button class="category-btn active">BACHELORETTE</button>
+                  </div>
                   <div class="special-offers-grid">
-                    <div
+                    <div class="category-content" data-category="BACHELORETTE"
                       style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(85, 191, 238, 0.3); border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;">
                       <div style="flex: 1;">
                         <h5
@@ -3875,18 +3926,9 @@
                       modalTabContents[tabName].style.display = 'block';
                     }
 
-                    // Toggle Button Categories
-                    const buttonsTable = document.getElementById('buttons-table-service');
-                    const buttonsPersonal = document.getElementById('buttons-personal');
 
-                    if (buttonsTable) buttonsTable.style.display = 'none';
-                    if (buttonsPersonal) buttonsPersonal.style.display = 'none';
 
-                    if (tabName === 'modal-table-service' && buttonsTable) {
-                      buttonsTable.style.display = 'flex';
-                    } else if (tabName === 'modal-personal' && buttonsPersonal) {
-                      buttonsPersonal.style.display = 'flex';
-                    }
+
                   });
                 });
               });
